@@ -1,0 +1,87 @@
+import java_cup.runtime.*;
+import java.util.*;
+
+action code {:
+:}
+
+parser code {:
+	/* this part is included in the parser class */
+	public static void main (String args[]) throws Exception{
+		new parser(new Yylex(System.in)).parse();
+	}
+:}
+
+
+/* Terminales */
+
+terminal MAS, MENOS, POR, DIV;
+terminal ASIG;
+terminal AP, CP, AL, CL;
+terminal PYC;
+terminal EQUAL, NOTEQUAL, LT, GT;
+terminal OR, AND;
+terminal IF, ELSE;
+terminal WHILE;
+terminal PUTW, PUTS;
+terminal INT;
+terminal MAIN;
+terminal String IDENT;
+terminal Integer NUMERO;
+
+/* No terminales */
+non terminal expr_list, expr_part;
+non terminal Integer expr; 
+
+non terminal asig_list, asig_part;
+non terminal String expr; 
+
+/* Precedencia */
+precedence nonassoc IF;
+precedence nonassoc ELSE;
+precedence left AP, CP, AL, CL;
+precedence left POR, DIV, MAS, MENOS;
+precedence left GT, LT, NOTEQUAL, EQUAL;
+precedence left AND, OR;
+precedence left ASIG;
+
+/*  Gramatica */
+
+expr_list ::= expr_list expr_part | expr_part;
+
+expr_part ::= expr:e {: System.out.println(" = "+e+";"); :} PYC; 
+
+expr ::= NUMERO:n
+ {: RESULT=n; :}
+| expr:l POR expr:r
+ {: RESULT=new Integer(l.intValue() * r.intValue()); :}
+| expr:l DIV expr:r
+ {: RESULT=new Integer(l.intValue() / r.intValue()); :}
+ | expr:l MAS expr:r
+ {: RESULT=new Integer(l.intValue() + r.intValue()); :}
+| expr:l MENOS expr:r
+ {: RESULT=new Integer(l.intValue() - r.intValue()); :}
+ | AP expr:e CP
+ {: RESULT=e; :}
+ ;
+
+asig_list ::= asig_list asig_part | asig_part;
+
+asig_part ::= asig:e {: System.out.println(" = "+e+";"); :} PYC;  
+
+asig ::= IDENT:n
+ {: RESULT=n; :}
+| asig:l EQUAL asig:r
+ {: RESULT=new String(l.intValue() == r.intValue()); :}
+| expr:l NOTEQUAL expr:r
+ {: RESULT=new String(l.intValue() != r.intValue()); :}
+ | expr:l LT expr:r
+ {: RESULT=new String(l.intValue() < r.intValue()); :}
+| expr:l GT expr:r
+ {: RESULT=new String(l.intValue() > r.intValue()); :}
+ | expr:l OR expr:r
+ {: RESULT=new String(l.intValue() || r.intValue()); :}
+| expr:l AND expr:r
+ {: RESULT=new String(l.intValue() && r.intValue()); :}
+ | AP expr:e CP
+ {: RESULT=e; :}
+ ;
