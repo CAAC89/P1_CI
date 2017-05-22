@@ -14,74 +14,78 @@ parser code {:
 
 /* Terminales */
 
-terminal MAS, MENOS, POR, DIV;
+
+/* Terminales operadores aritmeticos */
+terminal MAS, MENOS, MULT, DIV;
+
+/* Terminales operadores asignacion*/
 terminal ASIG;
+
+/* Terminales operadores delimitadores*/
 terminal AP, CP, AL, CL;
 terminal PYC;
+
+/* Terminales operadores relacional*/
 terminal EQUAL, NOTEQUAL, LT, GT;
+
+/* Terminales operadores logico*/
 terminal OR, AND;
+
+/* Terminales operadores palabras reservadas*/
 terminal IF, ELSE;
 terminal WHILE;
 terminal PUTW, PUTS;
-terminal INT;
-terminal MAIN;
-terminal String IDENT;
-terminal Integer NUMERO;
+terminal BREAK;
+terminal String ID;
+terminal INTEGER NUM;
 
 /* No terminales */
-non terminal expr_list, expr_part;
-non terminal Integer expr; 
-
-non terminal asig_list, asig_part;
-non terminal String expr; 
+non terminal Main main;
+non terminal Block block;
+non terminal VarLst var_lst;
+non terminal StmtLst stmt_lst;
+non terminal Statement statement;
+non terminal Condition condition;
+non terminal Expr expr, term, factor;
 
 /* Precedencia */
-precedence nonassoc IF;
-precedence nonassoc ELSE;
 precedence left AP, CP, AL, CL;
-precedence left POR, DIV, MAS, MENOS;
+precedence left MULT, DIV, MAS, MENOS;
 precedence left GT, LT, NOTEQUAL, EQUAL;
 precedence left AND, OR;
 precedence left ASIG;
 
-/*  Gramatica */
 
-expr_list ::= expr_list expr_part | expr_part;
+/*  GRAMATICA  */
 
-expr_part ::= expr:e {: System.out.println(" = "+e+";"); :} PYC; 
 
-expr ::= NUMERO:n
- {: RESULT=n; :}
-| expr:l POR expr:r
- {: RESULT=new Integer(l.intValue() * r.intValue()); :}
-| expr:l DIV expr:r
- {: RESULT=new Integer(l.intValue() / r.intValue()); :}
- | expr:l MAS expr:r
- {: RESULT=new Integer(l.intValue() + r.intValue()); :}
-| expr:l MENOS expr:r
- {: RESULT=new Integer(l.intValue() - r.intValue()); :}
- | AP expr:e CP
- {: RESULT=e; :}
- ;
+expr ::=
+		  term:t
+		  	{: RESULT = t; :}
+		| PLUS term:t
+			{: RESULT = t; :}
+		| MINUS term:t
+			{: RESULT = new InvExpr(t); :}
+		| expr:e PLUS term:t
+			{: RESULT = new PlusExpr(e,t); :}
+		| expr:e MINUS term:t
+			{: RESULT = new MinusExpr(e,t); :}
+		;
 
-asig_list ::= asig_list asig_part | asig_part;
+term ::=
+		  factor:f
+		  	{: RESULT = f; :}
+		| term:t MULT factor:f
+			{: RESULT = new MultExpr(t,f); :}
+		| term:t DIV factor:f
+			{: RESULT = new DivExpr(t,f); :}
+		;
 
-asig_part ::= asig:e {: System.out.println(" = "+e+";"); :} PYC;  
-
-asig ::= IDENT:n
- {: RESULT=n; :}
-| asig:l EQUAL asig:r
- {: RESULT=new String(l.intValue() == r.intValue()); :}
-| expr:l NOTEQUAL expr:r
- {: RESULT=new String(l.intValue() != r.intValue()); :}
- | expr:l LT expr:r
- {: RESULT=new String(l.intValue() < r.intValue()); :}
-| expr:l GT expr:r
- {: RESULT=new String(l.intValue() > r.intValue()); :}
- | expr:l OR expr:r
- {: RESULT=new String(l.intValue() || r.intValue()); :}
-| expr:l AND expr:r
- {: RESULT=new String(l.intValue() && r.intValue()); :}
- | AP expr:e CP
- {: RESULT=e; :}
- ;
+factor ::=
+		  ID:i
+		  	{: RESULT = new ID(i); :}
+		| INTEGER:i
+			{: RESULT = new NUM(i); :}
+		| AP expr:e CP
+			{: RESULT = e; :}
+		;
