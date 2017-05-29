@@ -54,3 +54,14 @@ parser code {:
         System.exit(1);
     }
 :};
+
+terminal PYC,PD,PI,LI,LD;
+terminal SUMA,RESTA,MULT,DIV;
+terminal MAYOR,MENOR,IGUAL,DIFERENTE;
+terminal ASIG;
+terminal String INT,IDENT;
+terminal OR,AND;
+terminal IF,ELSE,RETURN,BREAK,PUTS,PUTW,main;
+
+precedence left PD,PI,MULT,DIV,SUMA,RESTA,MAYOR,MENOR,IGUAL,DIFERENTE,AND,OR,ASIG;
+
