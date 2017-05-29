@@ -1,91 +1,56 @@
 import java_cup.runtime.*;
-import java.util.*;
+import java.io.FileReader;
 
-action code {:
-:}
-
+/* Trabajaremos en los posibles errores a presentar*/
 parser code {:
-	/* this part is included in the parser class */
-	public static void main (String args[]) throws Exception{
-		new parser(new Yylex(System.in)).parse();
-	}
-:}
-
-
-/* Terminales */
-
-
-/* Terminales operadores aritmeticos */
-terminal MAS, MENOS, MULT, DIV;
-
-/* Terminales operadores asignacion*/
-terminal ASIG;
-
-/* Terminales operadores delimitadores*/
-terminal AP, CP, AL, CL;
-terminal PYC;
-
-/* Terminales operadores relacional*/
-terminal EQUAL, NOTEQUAL, LT, GT;
-
-/* Terminales operadores logico*/
-terminal OR, AND;
-
-/* Terminales operadores palabras reservadas*/
-terminal IF, ELSE;
-terminal WHILE;
-terminal PUTW, PUTS;
-terminal BREAK;
-terminal String ID;
-terminal INTEGER NUM;
-
-/* No terminales */
-non terminal Main main;
-non terminal Block block;
-non terminal VarLst var_lst;
-non terminal StmtLst stmt_lst;
-non terminal Statement statement;
-non terminal Condition condition;
-non terminal Expr expr, term, factor;
-
-/* Precedencia */
-precedence left AP, CP, AL, CL;
-precedence left MULT, DIV, MAS, MENOS;
-precedence left GT, LT, NOTEQUAL, EQUAL;
-precedence left AND, OR;
-precedence left ASIG;
-
-
-/*  GRAMATICA  */
-
-
-expr ::=
-		  term:t
-		  	{: RESULT = t; :}
-		| PLUS term:t
-			{: RESULT = t; :}
-		| MINUS term:t
-			{: RESULT = new InvExpr(t); :}
-		| expr:e PLUS term:t
-			{: RESULT = new PlusExpr(e,t); :}
-		| expr:e MINUS term:t
-			{: RESULT = new MinusExpr(e,t); :}
-		;
-
-term ::=
-		  factor:f
-		  	{: RESULT = f; :}
-		| term:t MULT factor:f
-			{: RESULT = new MultExpr(t,f); :}
-		| term:t DIV factor:f
-			{: RESULT = new DivExpr(t,f); :}
-		;
-
-factor ::=
-		  ID:i
-		  	{: RESULT = new ID(i); :}
-		| INTEGER:i
-			{: RESULT = new NUM(i); :}
-		| AP expr:e CP
-			{: RESULT = e; :}
-		;
+    public void report_error(String message , Object info){
+        StringBuilder m = new StringBuilder("Error");
+        if (info instaceof java_cup.runtime.Symbol) {
+            java_cup.runtime.Symbol s = ((java_cup.runtime.Symbol) info);
+            if (s.left >= 0){
+                m.append(" in line ")+(s.left+1));
+                if (s.right >= 0)
+                    m.append(", column "+(s.right+1));
+            }
+        }
+        if("#1".equals(info.toString())){
+            message = ("Expresion SUMA invalida");
+        }
+        if("#2".equals(info.toString())){
+            message = ("Expresion RESTA invalida");
+        }
+        if("#3".equals(info.toString())){
+            message = ("Expresion MULT invalida");
+        }
+        if("#4".equals(info.toString())){
+            message = ("Expresion DIV invalida");
+        }
+        if("#5".equals(info.toString())){
+            message = ("Expresion MAYOR invalida");
+        }
+        if("#6".equals(info.toString())){
+            message = ("Expresion MENOR invalida");
+        }
+        if("#7".equals(info.toString())){
+            message = ("Expresion IGUAL invalida");
+        }
+        if("#8".equals(info.toString())){
+            message = ("Expresion DIFERENTE invalida");
+        }
+        if("#9".equals(info.toString())){
+            message = ("Expresion ASIG invalida");
+        }
+        if("#10".equals(info.toString())){
+            message = ("Expresion OR invalida");
+        }
+        if("#11".equals(info.toString())){
+            message = ("Expresion AND invalida");
+        }
+        m.append (" : " + message);
+        System.err.println(m);
+    }
+    public void report_fatal_error(String message , Object info){
+        report_error(message,info);
+        System.exit(1);
+    }
+:};

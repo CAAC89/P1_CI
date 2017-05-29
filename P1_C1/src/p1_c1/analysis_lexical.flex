@@ -1,55 +1,69 @@
 import java_cup.runtime.*;
+import java.io.Reader;
 
-%%
+%% //inicio de las opciones
 
-/* Declaraciones */
-
+/* Seccion de opciones y declaraciones de JFLEX */
+%class analysis_lexical
+%line
+%column
 %cup
 
-%%
+%{
+    private Symbol symbol(int type){
+        return new Symbol(type, yyline, yycolumn);
+    }
 
-/*  Expresiones y reglas  */
+    private Symbol symbol(int type , Object value){
+        return new Symbol(type, yyline, yycolumn , value);
+    }
 
-/*  Operador aritmetico  */
-"+"    {return new Symbol(sym.MAS);}
-"-"    {return new Symbol(sym.MENOS);}
-"*"    {return new Symbol(sym.MULT);}
-"/"    {return new Symbol(sym.DIV);}
+%}
 
-/*  Operador de asignacion  */
-"="    {return new Symbol(sym.ASIG); }
+L = [a-zA-Z_]
+D = [0-9]
+E = [%]
+P = [.]
+EX = [^]
 
 
-/*  Operador delimitadores  */
-"("    {return new Symbol(sym.AP); }
-")"    {return new Symbol(sym.CP); }
-"{"    {return new Symbol(sym.AL); }
-"}"    {return new Symbol(sym.CL); }
-";"    {return new Symbol(sym.PYC); }
+%%  //fin de las opciones
 
-/*  Operador relacional  */
-"=="   {return new Symbol(sym.EQUAL); }
-"!="   {return new Symbol(sym.NOTEQUAL); }
-"<"    {return new Symbol(sym.LT); }
-">"    {return new Symbol(sym.GT); }
+/*------- Seccion de reglas lexicas ----------*/
 
-/*  Operador logico  */
-"||"   {return new Symbol(sym.OR); }
-"&&"   {return new Symbol(sym.AND); }
+<YYINITIAL> {
 
-/*  palabras reservadas  */
-"if"   {return new Symbol(sym.IF); }
-"else" {return new Symbol(sym.ELSE); }
-"main" {return new Symbol(sym.MAIN); }
-"while" {return new Symbol(sym.WHILE); }
-"putw" {return new Symbol(sym.PUTW); }
-"puts" {return new Symbol(sym.PUTS); }
-"integer"  {return new Symbol(sym.INTEGER);}
-"break" {return new Symbol(sys.BREAK);}
+[+-]?{D}+({EX}[+-]?{D}+({P}{D}+)?)? {return symbol(sym.INT , new String(yytext()));}
 
-/*  Numero, cadenas , espacios, tabuladores  */
-0|[1-9][0-9]*  {return new Symbol(sym.NUM, new Integer(yytext()) ); }
-[a-z][a-zA-Z0-9_-]* {return new Symbol(sym.ID, yytext()); }
-\r|\n              	{ }   
-\ |\t|\f            	{ }  
-[^]                	{ throw new Error("Illegal character <"+yytext()+">"); }
+[_]?({L}|{D})* {return symbol(sym.IDENT , new String(yytext()));}
+
+";" {return symbol(sym.PYC);}
+"(" {return symbol(sym.PD);}
+")" {return symbol{sym.PI};}
+"{" {return symbol{sym.LI};}
+"}" {return symbol{sym.LD};}
+
+"+" {return symbol{sym.SUMA};}
+"-" {return symbol{sym.RESTA};}
+"*" {return symbol{sym.MULT};}
+"/" {return symbol{sym.DIV};}
+
+">" {return symbol{sym.MAYOR};}
+"<" {return symbol{sym.MENOR};}
+"==" {return symbol{sym.IGUAL};}
+"!=" {return symbol{sym.DIFERENTE};}
+
+"=" {return symbol{sym.ASIG};}
+
+"||" {return symbol{sym.OR};}
+"&&" {return symbol{sym.AND};}
+
+[i][f] {return symbol{sym.IF};}
+[e][l][s][e] {return symbol{sym.ELSE};}
+[w][h][i][l][e] {return symbol{sym.WHILE};}
+[r][e][t][u][r][n] {return symbol{sym.RETURN};}
+[b][r][e][a][k] {return symbol{sym.BREAK};}
+[S][y][s][t][e][m][.][o][u][t][.][p][r][i][n][t][l][n] {return symbol{sym.PUTS};}
+[S][y][s][t][e][m][.][o][u][t][.][p][r][i][n][t][l] {return symbol{sym.PUTW};}
+[p][u][b][l][i][c][][s][t][a][t][i][c][][v][o][i][d][][m][a][i][n]{return symbol{sym.main};}
+}
