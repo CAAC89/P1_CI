@@ -1,69 +1,70 @@
-import java_cup.runtime.*;
-import java.io.Reader;
+import java_cup.runtime.Symbol;
+%%
 
-%% //inicio de las opciones
-
-/* Seccion de opciones y declaraciones de JFLEX */
-%class analysis_lexical
-%line
-%column
+%public
 %cup
-
+%line
+%full
+%char
+%ignorecase
+%type java_cup.runtime.Symbol
+%class Yylex
 %{
-    private Symbol symbol(int type){
-        return new Symbol(type, yyline, yycolumn);
-    }
-
-    private Symbol symbol(int type , Object value){
-        return new Symbol(type, yyline, yycolumn , value);
-    }
-
+  public void PrintToken(String str){
+    System.out.println(str);}
 %}
 
+%eofval{
+  return new Symbol(sym.EOF);
+%eofval}
 L = [a-zA-Z_]
+LC = [a-zA-Z]
 D = [0-9]
 E = [%]
 P = [.]
+C = [#]
 EX = [^]
 
+%{
+public String lexico = "";
+public static int linea=1;
+public static int pos=0;
+public int ign = 0;
+public int iign = 0;
+public int st = 0;
+%}
+%%
 
-%%  //fin de las opciones
+[+-]?{D}+({EX}[+-]?{D}+({P}{D}+)?)? {if(ign == 0 & iign == 0){if(st == 0){lexico += yytext(); return new Symbol(sym.NUMERO);}else{lexico+=yytext();}}}
 
-/*------- Seccion de reglas lexicas ----------*/
+"=" {if(ign == 0 & iign == 0){if(st == 0){lexico+=yytext();return new Symbol(sym.ASIGNADOR);}else{lexico+=yytext();}}}
 
-<YYINITIAL> {
+"+" {if(ign == 0 & iign == 0){if(st == 0){lexico+=yytext();return new Symbol(sym.SUMA);}else{lexico+=yytext();}}}
+"-" {if(ign == 0 & iign == 0){if(st == 0){lexico+=yytext();return new Symbol(sym.RESTA);}else{lexico+=yytext();}}}
+"*" {if(ign == 0 & iign == 0){if(st == 0){lexico+=yytext();return new Symbol(sym.MULTI);}else{lexico+=yytext();}}}
+"/" {if(ign == 0 & iign == 0){if(st == 0){lexico+=yytext();return new Symbol(sym.DIVI);}else{lexico+=yytext();}}}
 
-[+-]?{D}+({EX}[+-]?{D}+({P}{D}+)?)? {return symbol(sym.INT , new String(yytext()));}
+";" {if(ign == 0 & iign == 0){if(st == 0){lexico+=yytext();return new Symbol(sym.PUNTO_COMA);}else{lexico+=yytext();}}}
 
-[_]?({L}|{D})* {return symbol(sym.IDENT , new String(yytext()));}
+"!=" {if(ign == 0 & iign == 0){if(st == 0){lexico+=yytext();return new Symbol(sym.DIFERENTE);}else{lexico+=yytext();}}}
+"==" {if(ign == 0 & iign == 0){if(st == 0){lexico+=yytext();return new Symbol(sym.EQUEQU);}else{lexico+=yytext();}}}
+"||" {if(ign == 0 & iign == 0){if(st == 0){lexico+=yytext();return new Symbol(sym.OROR);}else{lexico+=yytext();}}}
+"&&" {if(ign == 0 & iign == 0){if(st == 0){lexico+=yytext();return new Symbol(sym.ANDAND);}else{lexico+=yytext();}}}
 
-";" {return symbol(sym.PYC);}
-"(" {return symbol(sym.PD);}
-")" {return symbol{sym.PI};}
-"{" {return symbol{sym.LI};}
-"}" {return symbol{sym.LD};}
+"(" {if(ign == 0 & iign == 0){if(st == 0){lexico+=yytext();return new Symbol(sym.PARENT_AB);}else{lexico+=yytext();}}}
+")" {if(ign == 0 & iign == 0){if(st == 0){lexico+=yytext();return new Symbol(sym.PARENT_CE);}else{lexico+=yytext();}}}
+"{" {if(ign == 0 & iign == 0){if(st == 0){lexico+=yytext();return new Symbol(sym.LLAB_AB);}else{lexico+=yytext();}}}
+"}" {if(ign == 0 & iign == 0){if(st == 0){lexico+=yytext();return new Symbol(sym.LLAB_CE);}else{lexico+=yytext();}}}
 
-"+" {return symbol{sym.SUMA};}
-"-" {return symbol{sym.RESTA};}
-"*" {return symbol{sym.MULT};}
-"/" {return symbol{sym.DIV};}
+">" {if(ign == 0 & iign == 0){if(st == 0){lexico+=yytext();return new Symbol(sym.MAYOR);}else{lexico+=yytext();}}}
+"<" {if(ign == 0 & iign == 0){if(st == 0){lexico+=yytext();return new Symbol(sym.MINOR);}else{lexico+=yytext();}}}
 
-">" {return symbol{sym.MAYOR};}
-"<" {return symbol{sym.MENOR};}
-"==" {return symbol{sym.IGUAL};}
-"!=" {return symbol{sym.DIFERENTE};}
-
-"=" {return symbol{sym.ASIG};}
-
-"||" {return symbol{sym.OR};}
-"&&" {return symbol{sym.AND};}
-
-[i][f] {return symbol{sym.IF};}
-[e][l][s][e] {return symbol{sym.ELSE};}
-[w][h][i][l][e] {return symbol{sym.WHILE};}
-[r][e][t][u][r][n] {return symbol{sym.RETURN};}
-[b][r][e][a][k] {return symbol{sym.BREAK};}
-[S][y][s][t][e][m][.][o][u][t][.][p][r][i][n][t][l][n] {return symbol{sym.PUTS};}
-[S][y][s][t][e][m][.][o][u][t][.][p][r][i][n][t][l] {return symbol{sym.PUTW};}
-[p][u][b][l][i][c][][s][t][a][t][i][c][][v][o][i][d][][m][a][i][n]{return symbol{sym.main};}
-}
+[S][y][s][t][e][m][.][o][u][t][.][p][r][i][n][t][l][n] {if(ign == 0 & iign == 0){if(st == 0){lexico+=yytext();return new Symbol(sym.PUTS);}else{lexico+=yytext();}}}
+[S][y][s][t][e][m][.][o][u][t][.][p][r][i][n][t][l][n] {if(ign == 0 & iign == 0){if(st == 0){lexico+=yytext();return new Symbol(sym.PUTW);}else{lexico+=yytext();}}}
+[p][u][b][l][i][c][][s][t][a][t][i][c][][v][o][i][d][][m][a][i][n] {if(ign == 0 & iign == 0){if(st == 0){lexico+=yytext();return new Symbol(sym.EJECUTAR);}else{lexico+=yytext();}}}
+[b][r][e][a][k] {if(ign == 0 & iign == 0){if(st == 0){lexico+=yytext();return new Symbol(sym.BREAK);}else{lexico+=yytext();}}}
+[e][l][s][e] {if(ign == 0 & iign == 0){if(st == 0){lexico+=yytext();return new Symbol(sym.ELSE);}else{lexico+=yytext();}}}
+[i][f] {if(ign == 0 & iign == 0){if(st == 0){lexico+=yytext();return new Symbol(sym.IF);}else{lexico+=yytext();}}}
+[i][n][t] {if(ign == 0 & iign == 0){if(st == 0){lexico+=yytext();return new Symbol(sym.INT);}else{lexico+=yytext();}}}
+[w][h][i][l][e] {if(ign == 0 & iign == 0){if(st == 0){lexico+=yytext();return new Symbol(sym.WHILE);}else{lexico+=yytext();}}} 
+[_]?({L}|{D})* {if(ign == 0 & iign == 0){if(st == 0){lexico=yytext();return new Symbol(sym.IDENTIFICADOR);}else{lexico+=yytext();}}}

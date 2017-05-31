@@ -1,67 +1,86 @@
+/*Aqui se incluye el nombre del paquete al que va a pertenecer la clase parser.javay todos los paquetes
+ que se vayan a utilizar dentro del proyecto. Por ejemplo si sefuera a utilizar la clase ArrayList se 
+debe agregar la linea import Java.util.ArrayList;
+@author Carlos Arguello
+*/
+
+import java.io.*;
 import java_cup.runtime.*;
-import java.io.FileReader;
+//Clase que incluye las instrucciones de CUP :D
+/*el bloque que siguie es codigo que se copia a la clase parser.java,que puede ser utilizado dentro de las acciones semánticaseste
+ código se copia exactamente igual sin revisar errores.*/
 
-/* Trabajaremos en los posibles errores a presentar*/
-parser code {:
-    public void report_error(String message , Object info){
-        StringBuilder m = new StringBuilder("Error");
-        if (info instaceof java_cup.runtime.Symbol) {
-            java_cup.runtime.Symbol s = ((java_cup.runtime.Symbol) info);
-            if (s.left >= 0){
-                m.append(" in line ")+(s.left+1));
-                if (s.right >= 0)
-                    m.append(", column "+(s.right+1));
-            }
-        }
-        if("#1".equals(info.toString())){
-            message = ("Expresion SUMA invalida");
-        }
-        if("#2".equals(info.toString())){
-            message = ("Expresion RESTA invalida");
-        }
-        if("#3".equals(info.toString())){
-            message = ("Expresion MULT invalida");
-        }
-        if("#4".equals(info.toString())){
-            message = ("Expresion DIV invalida");
-        }
-        if("#5".equals(info.toString())){
-            message = ("Expresion MAYOR invalida");
-        }
-        if("#6".equals(info.toString())){
-            message = ("Expresion MENOR invalida");
-        }
-        if("#7".equals(info.toString())){
-            message = ("Expresion IGUAL invalida");
-        }
-        if("#8".equals(info.toString())){
-            message = ("Expresion DIFERENTE invalida");
-        }
-        if("#9".equals(info.toString())){
-            message = ("Expresion ASIG invalida");
-        }
-        if("#10".equals(info.toString())){
-            message = ("Expresion OR invalida");
-        }
-        if("#11".equals(info.toString())){
-            message = ("Expresion AND invalida");
-        }
-        m.append (" : " + message);
-        System.err.println(m);
-    }
-    public void report_fatal_error(String message , Object info){
-        report_error(message,info);
-        System.exit(1);
-    }
-:};
+parser code
+{:
+/*Generador gen = new Generador();
+public void annadeSym(int simbolo)
+{
+    this.gen.AddDOVarToPile(simbolo + "");
+}*/
 
-terminal PYC,PD,PI,LI,LD;
-terminal SUMA,RESTA,MULT,DIV;
-terminal MAYOR,MENOR,IGUAL,DIFERENTE;
-terminal ASIG;
-terminal String INT,IDENT;
-terminal OR,AND;
-terminal IF,ELSE,RETURN,BREAK,PUTS,PUTW,main;
+//este método sirve para el manejo de errores provisto por CUP :D
+public void syntax_error(Symbol s)
+{
+    /*report_error("Error de sintaxis Linea: "+Integer.toString(Yylex.linea)+" Columna: "+Integer.toString(Yylex.pos+1)+" En \""+s.value+"\"",null);*/
+}
+:}
+action code
+{:
 
-precedence left PD,PI,MULT,DIV,SUMA,RESTA,MAYOR,MENOR,IGUAL,DIFERENTE,AND,OR,ASIG;
+:}
 
+/*declaración de terminales y sus tipos*/
+terminal String NUMERO, IDENTIFICADOR;
+
+terminal ASIGNADOR, SUMA, RESTA, MULTI, DIVI, PUNTO_COMA,PUTS,PUTW,INT,
+DIFERENTE, PARENT_AB, PARENT_CE,LLAB_AB, LLAB_CE, OROR, ANDAND, MAYOR, MINOR, EQUEQU,IF, ELSE,WHILE,EJECUTAR;
+
+
+/*Declaracion de no terminales y sus tipos*/
+
+non terminal TIPO_DATO,TIPO_DATO_IDENTIFICADOR,BLOQUE_WHILE,BLOQUE_IF,ARIT_RELAC,OpeARIMETICA,OpeRELACIONAL_LOGICA,OP_ARITMETICO,OP_RELACIONAL_LOGICO,IDENTIFICADOR_ASIG_NUMERO;
+non terminal IMPRIMIR_CADENA,IMPRIMIR_NUMERO,IMPRESOR,PRO;
+
+/*presedencia de operadores*/
+
+precedence left PARENT_AB,PARENT_CE,MULTI,DIVI,SUMA,DIVI,MAYOR,MINOR,EQUEQU,DIFERENTE,ANDAND,OROR;
+
+/*Gramática: el lado izquierdo es reemplazado por su correspondiente producción si es un no terminal. 
+las acciones semánticas se colocan entre llaves y dos puntos {::}Un terminal o no terminal seguido de dos 
+puntos y una letra sirve como un alias del terminalo no terminal para poder utilizarlo como una variable del 
+tipo que le fue asignado en los bloques anteriores.*/
+
+PRO ::= EJECUTAR PARENT_AB PARENT_CE LLAB_AB IMPRIMIR_CADENA LLAB_CE 
+            | EJECUTAR PARENT_AB PARENT_CE LLAB_AB IMPRIMIR_NUMERO LLAB_CE
+            |EJECUTAR PARENT_AB PARENT_CE LLAB_AB    IMPRESOR LLAB_CE
+            |TIPO_DATO_IDENTIFICADOR EJECUTAR PARENT_AB PARENT_CE LLAB_AB BLOQUE_WHILE IMPRESOR LLAB_CE
+            | EJECUTAR PARENT_AB PARENT_CE LLAB_AB  BLOQUE_IF  IMPRESOR LLAB_CE;
+
+IMPRESOR ::= IMPRIMIR_CADENA IMPRIMIR_NUMERO | IMPRESOR;
+
+IMPRIMIR_CADENA ::= PUTS PARENT_AB  IDENTIFICADOR  PARENT_CE PUNTO_COMA;
+
+IMPRIMIR_NUMERO ::= PUTW PARENT_AB NUMERO PARENT_CE PUNTO_COMA | PUTW PARENT_AB IDENTIFICADOR PARENT_CE PUNTO_COMA | PUTW PARENT_AB OpeARIMETICA PARENT_CE PUNTO_COMA;
+
+BLOQUE_WHILE ::= WHILE PARENT_AB OpeRELACIONAL_LOGICA PARENT_CE LLAB_AB ARIT_RELAC LLAB_CE;
+
+BLOQUE_IF ::= IF PARENT_AB OpeRELACIONAL_LOGICA PARENT_CE LLAB_AB IDENTIFICADOR ASIGNADOR NUMERO PUNTO_COMA LLAB_CE |
+              IF PARENT_AB OpeRELACIONAL_LOGICA PARENT_CE LLAB_AB IDENTIFICADOR ASIGNADOR NUMERO PUNTO_COMA LLAB_CE ELSE LLAB_AB IDENTIFICADOR ASIGNADOR NUMERO PUNTO_COMA LLAB_CE;
+
+ARIT_RELAC ::= IDENTIFICADOR ASIGNADOR OpeARIMETICA PUNTO_COMA | ARIT_RELAC;
+
+OpeARIMETICA ::= NUMERO OP_ARITMETICO NUMERO | IDENTIFICADOR OP_ARITMETICO IDENTIFICADOR | NUMERO OP_ARITMETICO IDENTIFICADOR | IDENTIFICADOR OP_ARITMETICO NUMERO; 
+
+OpeRELACIONAL_LOGICA ::= NUMERO OP_RELACIONAL_LOGICO NUMERO | IDENTIFICADOR OP_RELACIONAL_LOGICO IDENTIFICADOR | NUMERO OP_RELACIONAL_LOGICO IDENTIFICADOR | IDENTIFICADOR OP_RELACIONAL_LOGICO NUMERO;
+
+
+OP_ARITMETICO ::= SUMA | RESTA | MULTI | DIVI ;  
+
+OP_RELACIONAL_LOGICO ::= EQUEQU | MAYOR | MINOR | DIFERENTE | OROR | ANDAND;  
+
+
+IDENTIFICADOR_ASIG_NUMERO ::= IDENTIFICADOR ASIGNADOR NUMERO PUNTO_COMA;  
+
+TIPO_DATO_IDENTIFICADOR ::= TIPO_DATO IDENTIFICADOR PUNTO_COMA | TIPO_DATO_IDENTIFICADOR; 
+
+TIPO_DATO ::= INT;   
