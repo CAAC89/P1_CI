@@ -58,6 +58,8 @@ public int st = 0;
 
 ">" {if(ign == 0 & iign == 0){if(st == 0){lexico+=yytext();return new Symbol(sym.MAYOR);}else{lexico+=yytext();}}}
 "<" {if(ign == 0 & iign == 0){if(st == 0){lexico+=yytext();return new Symbol(sym.MINOR);}else{lexico+=yytext();}}}
+"'" {if(ign == 0 & iign == 0){if(st == 0){lexico+=yytext();return new Symbol(sym.COMILLAIZQ);}else{lexico+=yytext();}}}
+"'" {if(ign == 0 & iign == 0){if(st == 0){lexico+=yytext();return new Symbol(sym.COMILLADER);}else{lexico+=yytext();}}}
 
 [S][y][s][t][e][m][.][o][u][t][.][p][r][i][n][t][l][n] {if(ign == 0 & iign == 0){if(st == 0){lexico+=yytext();return new Symbol(sym.PUTS);}else{lexico+=yytext();}}}
 [S][y][s][t][e][m][.][o][u][t][.][p][r][i][n][t][l][n] {if(ign == 0 & iign == 0){if(st == 0){lexico+=yytext();return new Symbol(sym.PUTW);}else{lexico+=yytext();}}}
@@ -68,3 +70,4 @@ public int st = 0;
 [i][n][t] {if(ign == 0 & iign == 0){if(st == 0){lexico+=yytext();return new Symbol(sym.INT);}else{lexico+=yytext();}}}
 [w][h][i][l][e] {if(ign == 0 & iign == 0){if(st == 0){lexico+=yytext();return new Symbol(sym.WHILE);}else{lexico+=yytext();}}} 
 [_]?({L}|{D})* {if(ign == 0 & iign == 0){if(st == 0){lexico=yytext();return new Symbol(sym.IDENTIFICADOR);}else{lexico+=yytext();}}}
+
