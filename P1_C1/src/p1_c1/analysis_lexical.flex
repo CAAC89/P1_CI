@@ -9,7 +9,7 @@ import java_cup.runtime.Symbol;
 %cup
 %full
 %type java_cup.runtime.Symbol
-%implements java_cup.runtime.Scanner
+
 %eofval{
     System.out.println("FINARCHIVO");
     return null;
@@ -33,10 +33,6 @@ id=[letra][A-Za-z0-9]*
       
 ")" {return new Symbol(sym.close_par,new token(yytext(),yychar,yyline));}
    
-"true" {return new Symbol(sym.true_,new token(yytext(),yychar,yyline));}
-      
-"false" {return new Symbol(sym.false_,new token(yytext(),yychar,yyline));}
-
 ";" {return new Symbol(sym.pyc_,new token(yytext(),yychar,yyline));}
       
 "=" {return new Symbol(sym.asignacion_,new token(yytext(),yychar,yyline));}

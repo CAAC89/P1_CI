@@ -3,12 +3,16 @@
 debe agregar la linea import Java.util.ArrayList;
 @author Carlos Arguello
 */
-
+package P1_C1;
 import java.io.*;
 import java_cup.runtime.*;
 
 action code{:
    public void ImprimeValorCadena(String str){
+        System.out.println(str) ;
+   }
+
+    public void ImprimeValorNumero(int str){
         System.out.println(str) ;
    }
 
@@ -57,7 +61,7 @@ action code{:
         return aa*bb;
     }
 
-    public int division (String a, String b)
+    public  int division (String a, String b)
     {
         try{
         if ("".equals(a) || "".equals(b)){
@@ -66,10 +70,17 @@ action code{:
         }catch(NumberFormatException e){
             System.out.println("Exception: not a number"); 
         }
+        
         int aa=Integer.parseInt(a);
         int bb=Integer.parseInt(b);
-        
+        try {
+  
+           return aa/bb;    
+        }catch(ArithmeticException e){
+                System.out.println("Exception: Divided zero"); 
+        }
         return aa/bb;
+       
     }
 
     public boolean mayor (String a, String b)
@@ -125,13 +136,16 @@ non terminal token TIPOS_DATOS_NUMERICOS,CONSTANTE,CONSTANTE_INT;
 non terminal token ASIG_ENTERA,BLOQUE_IF_COMPUESTO,BLOQUE_IF_SIMPLE;
 non terminal token COMPARACION,ARITMETICAS;
 non terminal token COMPARACION_COMPLETA, ARITMETICA_COMPLETA;
+non terminal token IMPRESOR_VARIABLE, IMPRESOR_NUMERO;
+non terminal token BLOQUE_WHILE_SIMPLE,BLOQUE_WHILE_COMPUESTO;
+non terminal token BLOQUE_MAIN;
 
 
 /*DECLARACION DE VARIABLES TERMINALES */
 
 terminal token open_lla,close_lla,open_par,close_par;
 terminal token suma,resta,multiplicacion,division;
-terminal token id,numero;
+terminal token id,entero;
 terminal token pyc_,asignacion_;
 terminal token or_,and_,igual_igual,no_igual,mayor, menor;
 terminal token main,iff,whilee,elsee,puts,putw,intt;
@@ -142,14 +156,42 @@ terminal token main,iff,whilee,elsee,puts,putw,intt;
 
 /*GRAMATICA */
 
+start with BLOQUE_MAIN; // aqui comienza el programa
 
+/* falta mas composicion en el main*/
+BLOQUE_MAIN ::= CONSTANTE_INT main open_lla ASIG_ENTERA BLOQUE_WHILE_COMPUESTO close_lla
+                | main open_lla IMPRESOR_VARIABLE  IMPRESOR_VARIABLE close_lla;
+
+BLOQUE_WHILE_COMPUESTO ::= BLOQUE_WHILE_SIMPLE IMPRESOR_VARIABLE IMPRESOR_NUMERO;
+
+BLOQUE_WHILE_SIMPLE ::= whilee open_par id igual_igual entero close_par open_lla id asignacion_  ARITMETICA_COMPLETA pyc_ close_lla
+                        | whilee open_par id no_igual entero close_par open_lla id asignacion_  ARITMETICA_COMPLETA pyc_ close_lla
+                        | whilee open_par id mayor entero close_par open_lla id asignacion_  ARITMETICA_COMPLETA pyc_ close_lla
+                        | whilee open_par id menor entero close_par open_lla id asignacion_  ARITMETICA_COMPLETA pyc_ close_lla;
+
+IMPRESOR_VARIABLE ::= puts open_par CONSTANTE:i close_par pyc_{: 
+                            String val1=i.getValor();
+                            ImprimeValorCadena(val1);
+                    :};
+
+IMPRESOR_NUMERO ::= putw open_par CONSTANTE:i close_par pyc_{: 
+                            int val1=i.getValor();
+                            ImprimeValorNumero(val1);
+                    :};
+
+BLOQUE_IF_COMPUESTO ::= BLOQUE_IF_SIMPLE elsee open_lla ASIG_ENTERA close_lla;
+
+BLOQUE_IF_SIMPLE ::= iff open_par id igual_igual entero  close_par open_lla ASIG_ENTERA  close_lla
+                     | iff open_par id no_igual entero  close_par open_lla ASIG_ENTERA  close_lla
+                     | iff open_par id mayor entero  close_par open_lla ASIG_ENTERA  close_lla
+                     | iff open_par id menor entero  close_par open_lla ASIG_ENTERA  close_lla;
 
 ARITMETICAS ::= suma:s | resta:r | multiplicacion:m | division:d;
 COMPARACION ::= or_:o | and_:a | igual_igual:ii | no_igual:ni | mayor:ma | menor:me;
 
-COMPARACION_COMPLETA ::=CONSTANTE:y COMPARACION_COMPLETA:cc CONSTANTE:i{:
-              String val1=y.getValor();
-              String val2=i.getValor();
+COMPARACION_COMPLETA ::=CONSTANTE:a COMPARACION_COMPLETA:cc CONSTANTE:b{:
+              String val1=a.getValor();
+              String val2=b.getValor();
 
             if(cc.getValor().equals(">")){
                 mayor(val1,val2);
@@ -159,9 +201,9 @@ COMPARACION_COMPLETA ::=CONSTANTE:y COMPARACION_COMPLETA:cc CONSTANTE:i{:
             }                          
 :};
 
-ARITMETICA_COMPLETA ::=CONSTANTE:y ARITMETICA_COMPLETA:ac CONSTANTE:i{:
-              String val1=y.getValor();
-              String val2=i.getValor();
+ARITMETICA_COMPLETA ::=CONSTANTE:e ARITMETICA_COMPLETA:ac CONSTANTE:f{:
+              String val1=e.getValor();
+              String val2=f.getValor();
 
             if(ac.getValor().equals("+")){
                 suma(val1,val2);
@@ -179,5 +221,5 @@ ARITMETICA_COMPLETA ::=CONSTANTE:y ARITMETICA_COMPLETA:ac CONSTANTE:i{:
 
 ASIG_ENTERA ::= CONSTANTE:i asignacion_ CONSTANTE:n pyc_;
 CONSTANTE_INT ::= TIPOS_DATOS_NUMERICOS CONSTANTE:i pyc_;
-CONSTANTE ::= id:i | numero:n;
+CONSTANTE ::= id:i | entero:n;
 TIPOS_DATOS_NUMERICOS ::= intt;
