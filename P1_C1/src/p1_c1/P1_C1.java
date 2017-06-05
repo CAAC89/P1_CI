@@ -14,12 +14,35 @@ package p1_c1;
 public class P1_C1 {
 
     /**
-     * @param args the command line arguments
+     * @param a
+     * @param b
      */
-    public static void main(String[] args) {
-        // TODO code application logic here
-
+    
+    public static boolean suma (String a, String b)
+    {
+        try{
+        if ("".equals(a) || "".equals(b)){
+            System.out.println("Exception: null parameters");
+            }
+        }catch(NumberFormatException e){
+            System.out.println("not a number"); 
+        }
+        int aa=Integer.parseInt(a);
+        int bb=Integer.parseInt(b);
         
+       if (aa>bb){
+            return true;
+        }
+        else{
+            return false;
+        }
     }
     
+    
+    
+    public static void main(String[] args) {
+        // TODO code application logic here
+           System.out.print( suma("4","4"));
+  
+    }
 }

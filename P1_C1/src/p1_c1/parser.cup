@@ -6,82 +6,178 @@ debe agregar la linea import Java.util.ArrayList;
 
 import java.io.*;
 import java_cup.runtime.*;
-//Clase que incluye las instrucciones de CUP :D
-/*el bloque que siguie es codigo que se copia a la clase parser.java,que puede ser utilizado dentro de las acciones semánticaseste
- código se copia exactamente igual sin revisar errores.*/
 
-parser code
-{:
-/*Generador gen = new Generador();
-public void annadeSym(int simbolo)
-{
-    this.gen.AddDOVarToPile(simbolo + "");
-}*/
+action code{:
+   public void ImprimeValorCadena(String str){
+        System.out.println(str) ;
+   }
 
+   public int suma (String a, String b)
+    {
+        try{
+        if ("".equals(a) || "".equals(b)){
+            System.out.println("Exception: null parameters");
+            }
+        }catch(NumberFormatException e){
+            System.out.println("Exception: not a number"); 
+        }
+        int aa=Integer.parseInt(a);
+        int bb=Integer.parseInt(b);
+        
+        return aa+bb;
+    }
 
-//este método sirve para el manejo de errores provisto por CUP :D
-/*public void syntax_error(Symbol s)
-{
-     report_error("Error de sintaxis Linea: "+Integer.toString(Yylex.linea)+" Columna: "+Integer.toString(Yylex.pos+1)+" En \""+s.value+"\"",null);
-}*/
+    public int resta (String a, String b)
+    {
+        try{
+        if ("".equals(a) || "".equals(b)){
+            System.out.println("Exception: null parameters");
+            }
+        }catch(NumberFormatException e){
+            System.out.println("Exception: not a number"); 
+        }
+        int aa=Integer.parseInt(a);
+        int bb=Integer.parseInt(b);
+        
+        return aa-bb;
+    }
+
+    public int multiplicacion (String a, String b)
+    {
+        try{
+        if ("".equals(a) || "".equals(b)){
+            System.out.println("Exception: null parameters");
+            }
+        }catch(NumberFormatException e){
+            System.out.println("Exception: not a number"); 
+        }
+        int aa=Integer.parseInt(a);
+        int bb=Integer.parseInt(b);
+        
+        return aa*bb;
+    }
+
+    public int division (String a, String b)
+    {
+        try{
+        if ("".equals(a) || "".equals(b)){
+            System.out.println("Exception: null parameters");
+            }
+        }catch(NumberFormatException e){
+            System.out.println("Exception: not a number"); 
+        }
+        int aa=Integer.parseInt(a);
+        int bb=Integer.parseInt(b);
+        
+        return aa/bb;
+    }
+
+    public boolean mayor (String a, String b)
+    {
+        try{
+        if ("".equals(a) || "".equals(b)){
+            System.out.println("Exception: null parameters");
+            }
+        }catch(NumberFormatException e){
+            System.out.println("not a number"); 
+        }
+        int aa=Integer.parseInt(a);
+        int bb=Integer.parseInt(b);
+        
+        if (aa>bb){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public boolean menor (String a, String b)
+    {
+        try{
+        if ("".equals(a) || "".equals(b)){
+            System.out.println("Exception: null parameters");
+            }
+        }catch(NumberFormatException e){
+            System.out.println("not a number"); 
+        }
+        int aa=Integer.parseInt(a);
+        int bb=Integer.parseInt(b);
+        
+        if (aa<bb){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
 :}
-action code
-{:
 
+parser code{:
+public void syntax_error(Symbol st){
+    token t=(token)st.value;
+    report_error("Error Sintactico:"+ t.getValor()+"- "+t.getX()+"-"+t.getY(),null);
 :}
 
-/*declaración de terminales y sus tipos*/
-terminal String NUMERO, IDENTIFICADOR;
+/*Declaracion de variables no terminales*/
+non terminal token TIPOS_DATOS_NUMERICOS,CONSTANTE,CONSTANTE_INT;
+non terminal token ASIG_ENTERA,BLOQUE_IF_COMPUESTO,BLOQUE_IF_SIMPLE;
+non terminal token COMPARACION,ARITMETICAS;
+non terminal token COMPARACION_COMPLETA, ARITMETICA_COMPLETA;
 
-terminal ASIGNADOR, SUMA, RESTA, MULTI, DIVI, PUNTO_COMA,PUTS,PUTW,INT,
-DIFERENTE, PARENT_AB, PARENT_CE,LLAB_AB, LLAB_CE, OROR, ANDAND, MAYOR, MINOR, EQUEQU,IF, ELSE,WHILE,MAIN;
+
+/*DECLARACION DE VARIABLES TERMINALES */
+
+terminal token open_lla,close_lla,open_par,close_par;
+terminal token suma,resta,multiplicacion,division;
+terminal token id,numero;
+terminal token pyc_,asignacion_;
+terminal token or_,and_,igual_igual,no_igual,mayor, menor;
+terminal token main,iff,whilee,elsee,puts,putw,intt;
 
 
-/*Declaracion de no terminales y sus tipos*/
+/*DECLARACION DE PRECEDENCIA */
+/*precedence left open_par,close_par,multiplicacion,division,suma,resta,mayor,menor,igual_igual,no_igual,and_,or_;*/
 
-non terminal TIPO_DATO,TIPO_DATO_IDENTIFICADOR,BLOQUE_WHILE,BLOQUE_IF,OpeARIMETICA,OpeRELACIONAL_LOGICA,OP_RELACIONAL_LOGICO,IDENTIFICADOR_ASIG_NUMERO;
-non terminal IMPRIMIR_CADENA,IMPRIMIR_NUMERO,IDENTIFICADOR_ASIG_NUMERO_OP,PROGRAMA,IMPRIMIR,COMILLAIZQ,COMILLADER,BLOQUE_WHILE_IF;
+/*GRAMATICA */
 
-/*presedencia de operadores*/
 
-precedence left PARENT_AB,PARENT_CE,MULTI,DIVI,SUMA,DIVI,MAYOR,MINOR,EQUEQU,DIFERENTE,ANDAND,OROR;
 
-/*Gramática: el lado izquierdo es reemplazado por su correspondiente producción si es un no terminal. 
-las acciones semánticas se colocan entre llaves y dos puntos {::}Un terminal o no terminal seguido de dos 
-puntos y una letra sirve como un alias del terminalo no terminal para poder utilizarlo como una variable del 
-tipo que le fue asignado en los bloques anteriores.*/
+ARITMETICAS ::= suma:s | resta:r | multiplicacion:m | division:d;
+COMPARACION ::= or_:o | and_:a | igual_igual:ii | no_igual:ni | mayor:ma | menor:me;
 
-PROGRAMA ::= TIPO_DATO_IDENTIFICADOR MAIN PARENT_AB PARENT_CE LLAB_AB IDENTIFICADOR_ASIG_NUMERO  BLOQUE_WHILE IMPRIMIR LLAB_CE
-             |  TIPO_DATO_IDENTIFICADOR MAIN PARENT_AB PARENT_CE LLAB_AB IDENTIFICADOR_ASIG_NUMERO  BLOQUE_IF IMPRIMIR LLAB_CE
-             |  TIPO_DATO_IDENTIFICADOR MAIN PARENT_AB PARENT_CE LLAB_AB IDENTIFICADOR_ASIG_NUMERO  BLOQUE_WHILE_IF IMPRIMIR LLAB_CE
-             |  TIPO_DATO_IDENTIFICADOR MAIN PARENT_AB PARENT_CE LLAB_AB IDENTIFICADOR_ASIG_NUMERO IMPRIMIR LLAB_CE;   
-                
+COMPARACION_COMPLETA ::=CONSTANTE:y COMPARACION_COMPLETA:cc CONSTANTE:i{:
+              String val1=y.getValor();
+              String val2=i.getValor();
 
-IMPRIMIR ::= IMPRIMIR_CADENA | IMPRIMIR_NUMERO |;
-IMPRIMIR_CADENA ::= PUTS PARENT_AB COMILLAIZQ IDENTIFICADOR COMILLADER PARENT_CE PUNTO_COMA;
-IMPRIMIR_NUMERO ::= PUTW PARENT_AB NUMERO PARENT_CE PUNTO_COMA;
+            if(cc.getValor().equals(">")){
+                mayor(val1,val2);
+            }
+            if(cc.getValor().equals("<")){
+                menor(val1,val2);
+            }                          
+:};
 
-BLOQUE_WHILE_IF ::= WHILE PARENT_AB OP_RELACIONAL_LOGICO PARENT_CE LLAB_AB IDENTIFICADOR_ASIG_NUMERO_OP BLOQUE_IF LLAB_CE;
+ARITMETICA_COMPLETA ::=CONSTANTE:y ARITMETICA_COMPLETA:ac CONSTANTE:i{:
+              String val1=y.getValor();
+              String val2=i.getValor();
 
-BLOQUE_IF ::= IF PARENT_AB OP_RELACIONAL_LOGICO PARENT_CE LLAB_AB IDENTIFICADOR_ASIG_NUMERO LLAB_CE ELSE LLAB_AB IDENTIFICADOR_ASIG_NUMERO LLAB_CE |
-              IF PARENT_AB OP_RELACIONAL_LOGICO PARENT_CE LLAB_AB IDENTIFICADOR_ASIG_NUMERO LLAB_CE;
+            if(ac.getValor().equals("+")){
+                suma(val1,val2);
+            }
+            if(ac.getValor().equals("-")){
+                resta(val1,val2);
+            }  
+            if(ac.getValor().equals("*")){
+                multiplicacion(val1,val2);
+            }
+            if(ac.getValor().equals("/")){
+                division(val1,val2);
+            } 
+:};
 
-BLOQUE_WHILE ::= WHILE PARENT_AB OP_RELACIONAL_LOGICO PARENT_CE LLAB_AB IDENTIFICADOR_ASIG_NUMERO_OP LLAB_CE;
-
-IDENTIFICADOR_ASIG_NUMERO_OP ::= IDENTIFICADOR ASIGNADOR NUMERO PUNTO_COMA
-                                 | IDENTIFICADOR ASIGNADOR IDENTIFICADOR OpeARIMETICA IDENTIFICADOR PUNTO_COMA
-                                 | IDENTIFICADOR ASIGNADOR IDENTIFICADOR OpeARIMETICA NUMERO PUNTO_COMA
-                                 | IDENTIFICADOR ASIGNADOR NUMERO OpeARIMETICA NUMERO PUNTO_COMA
-                                 | IDENTIFICADOR ASIGNADOR NUMERO OpeARIMETICA IDENTIFICADOR PUNTO_COMA |; 
-
-OP_RELACIONAL_LOGICO ::= PARENT_AB IDENTIFICADOR OpeRELACIONAL_LOGICA IDENTIFICADOR PARENT_CE 
-                        | PARENT_AB IDENTIFICADOR OpeRELACIONAL_LOGICA NUMERO PARENT_CE;
-                         
-IDENTIFICADOR_ASIG_NUMERO ::= IDENTIFICADOR ASIGNADOR NUMERO PUNTO_COMA | IDENTIFICADOR_ASIG_NUMERO PUNTO_COMA |;
-
-OpeARIMETICA ::= SUMA | RESTA | MULTI | DIVI;
-
-OpeRELACIONAL_LOGICA ::= DIFERENTE | EQUEQU | MAYOR | MINOR | ANDAND | OROR;
-
-TIPO_DATO_IDENTIFICADOR ::= TIPO_DATO IDENTIFICADOR PUNTO_COMA |;
-TIPO_DATO ::= INT; 
+ASIG_ENTERA ::= CONSTANTE:i asignacion_ CONSTANTE:n pyc_;
+CONSTANTE_INT ::= TIPOS_DATOS_NUMERICOS CONSTANTE:i pyc_;
+CONSTANTE ::= id:i | numero:n;
+TIPOS_DATOS_NUMERICOS ::= intt;
