@@ -5,6 +5,9 @@
  */
 package p1_c1;
 
+import java.io.File;
+import java.io.FileReader;
+
 
 
 /**
@@ -13,37 +16,20 @@ package p1_c1;
  */
 public class P1_C1 {
 
-    /**
-     * @param a
-     * @param b
-     */
-    
-    public static int division (String a, String b)
-    {
-        try{
-        if ("".equals(a) || "".equals(b)){
-            System.out.println("Exception: null parameters");
-            }
-        }catch(NumberFormatException e){
-            System.out.println("Exception: not a number"); 
-        }
-        
-        int aa=Integer.parseInt(a);
-        int bb=Integer.parseInt(b);
-        try {
-  
-           return aa/bb;    
-        }catch(ArithmeticException e){
-                System.out.println("Exception: Divided zero"); 
-        }
-        return aa/bb;
-       
-    }
-    
-    
+ 
     public static void main(String[] args) {
         // TODO code application logic here
-           System.out.print( division("5","0"));
-  
+        File file=new File("C:\\Users\\Carlos\\Desktop\\P1_CI\\P1_C1\\src\\p1_c1\\ejemplo.txt.txt");
+        try{
+        
+        FileReader fr=new FileReader(file);
+        Yylex lex=new Yylex(fr);
+        parser miParser=new parser(lex);
+        miParser.parse();
+        
+	}catch(Exception e){ 
+            System.out.println(e);
+     
+        }
     }
 }
